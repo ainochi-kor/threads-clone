@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";Add commentMore actions
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs, useRouter } from "expo-router";
 
 export default function TabLayout() {
@@ -11,7 +11,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused }) => (
@@ -75,6 +75,19 @@ export default function TabLayout() {
               color={focused ? "black" : "gray"}
             />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="following"
+        options={{
+          tabBarLabel: () => null,
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="(post)/[username]/post/[postId]"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
