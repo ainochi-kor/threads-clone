@@ -1,24 +1,30 @@
 import { usePathname, useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 export default function Index() {
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <SafeAreaView
+      style={
+        (styles.container,
+        { paddingTop: insets.top, paddingBottom: insets.bottom })
+      }
     >
-      <View>
-        <TouchableOpacity onPress={() => router.push(`./`)}>
-          <Text style={{ color: pathname === "/" ? "red" : "black" }}>
-            For you
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.tabContainer}>
+        <View style={styles.tab}>
+          <TouchableOpacity onPress={() => router.push(`./`)}>
+            <Text style={{ color: pathname === "/" ? "red" : "black" }}>
+              For you
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View>
         <TouchableOpacity onPress={() => router.push(`./following`)}>
@@ -32,6 +38,18 @@ export default function Index() {
           <Text>게시글</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  tabContainer: {
+    flexDirection: "row",
+  },
+  tab: {
+    flex: 1,
+  },
+});
