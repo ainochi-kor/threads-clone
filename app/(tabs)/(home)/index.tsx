@@ -1,5 +1,13 @@
+import { BlurView } from "expo-blur";
+import { Image } from "expo-image";
 import { usePathname, useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -9,6 +17,10 @@ export default function Index() {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const isLoggedIn = false; // 로그인 상태를 확인하는 변수
+
+  const { width, height } = Dimensions.get("window");
+  console.log("화면 너비:", width, "화면 높이:", height);
 
   return (
     <SafeAreaView
@@ -17,22 +29,39 @@ export default function Index() {
         { paddingTop: insets.top, paddingBottom: insets.bottom })
       }
     >
-      <View style={styles.tabContainer}>
-        <View style={styles.tab}>
-          <TouchableOpacity onPress={() => router.push(`./`)}>
-            <Text style={{ color: pathname === "/" ? "red" : "black" }}>
-              For you
-            </Text>
+      <BlurView intensity={70} style={styles.header}>
+        <Image
+          source={require("../../../assets/images/react-logo.png")}
+          style={styles.headerLogo}
+        />
+        {!isLoggedIn && (
+          <TouchableOpacity
+            onPress={() => router.navigate(`./login`)}
+            style={styles.loginButton}
+          >
+            <Text style={styles.loginButtonText}>로그인</Text>
           </TouchableOpacity>
+        )}
+      </BlurView>
+      {isLoggedIn && (
+        <View style={styles.tabContainer}>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => router.push(`./`)}>
+              <Text style={{ color: pathname === "/" ? "red" : "black" }}>
+                For you
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={() => router.push(`./following`)}>
+              <Text style={{ color: pathname === "/" ? "black" : "red" }}>
+                Following
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View>
-        <TouchableOpacity onPress={() => router.push(`./following`)}>
-          <Text style={{ color: pathname === "/" ? "black" : "red" }}>
-            Following
-          </Text>
-        </TouchableOpacity>
-      </View>
+      )}
+
       <View>
         <TouchableOpacity onPress={() => router.push(`./seatch`)}>
           <Text>게시글</Text>
@@ -51,5 +80,27 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
+    alignItems: "center",
+  },
+  header: {
+    alignItems: "center",
+  },
+  headerLogo: {
+    width: 42, // DP, DIP
+    height: 42, // DP, DIP
+  },
+  loginButton: {
+    position: "absolute",
+    right: 20,
+    top: 0,
+    backgroundColor: "black",
+    borderWidth: 1,
+    borderColor: "black",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  loginButtonText: {
+    color: "white",
   },
 });
