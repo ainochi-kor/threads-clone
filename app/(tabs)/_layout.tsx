@@ -25,15 +25,15 @@ const AnimationTabBarButton = ({
         toValue: 1.2,
         useNativeDriver: true, // GPU 가속을 사용하여 애니메이션 성능 향상
         friction: 4,
-        speed: 200,
       }),
       Animated.spring(scaleValue, {
         toValue: 1,
         useNativeDriver: true,
         friction: 4,
-        speed: 200,
       }),
     ]).start();
+  };
+
   return (
     <Pressable
       {...propsWithoutRef}
@@ -55,7 +55,7 @@ const AnimationTabBarButton = ({
 
 export default function TabLayout() {
   const router = useRouter();
-  const isLoggedIn = false;
+  const isLoggedIn = true;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const openLoginModal = () => {
