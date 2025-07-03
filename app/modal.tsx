@@ -98,22 +98,37 @@ export default function Modal() {
 
   const getMyLocation = async (id: string) => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    console.log("getMyLocation", status);
     if (status !== "granted") {
       Alert.alert(
-        "Location permission not granted",
-        "Please grant location permission to use this feature",
+        "Location Permission Required",
+        "Please enable location permissions in settings to add your location to the thread.",
         [
           {
-            text: "Open settings",
-            onPress: () => {
-              Linking.openSettings();
+            text: "Open Settings",
+            onPress: async () => {
+              await Linking.openSettings();
             },
           },
           {
             text: "Cancel",
           },
         ]
+      );
+      let location = await Location.getCurrentPositionAsync({});
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+
+      setThreads((prevThreads) =>
+        prevThreads.map((thread) =>
+          thread.id === id
+            ? {
+                ...thread,
+                location: [location.coords.latitude, location.coords.longitude],
+              }
+            : thread
+        )
       );
       return;
     }
