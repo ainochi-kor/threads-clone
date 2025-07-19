@@ -27,6 +27,9 @@ if (__DEV__) {
           refreshToken: "refresh-token",
           user: {
             id: "user-id",
+            name: "Test User",
+            description: "This is a test user",
+            profileImage: "https://example.com/profile.jpg",
           },
         };
       });

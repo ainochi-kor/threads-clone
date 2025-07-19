@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,16 +17,20 @@ export default function Login() {
       }),
     })
       .then((response) =>
-        response.status >= 400 ? Alert.alert("Error", "Invalid credentials") : response.json()
+        response.status >= 400
+          ? Alert.alert("Error", "Invalid credentials")
+          : response.json()
       )
       .then((data) => {
-        if (data.accessToken) {
-          // Handle successful login, e.g., store tokens and redirect
-          console.log("Login successful", data);
-          // router.push("/(tabs)");
-        } else {
-          console.error("Login failed", data);
-        }
+        console.log("Login successful:", data);
+        return Promise.all([
+          SecureStore.setItemAsync("accessToken", data.accessToken),
+          SecureStore.setItemAsync("refreshToken", data.refreshToken),
+          AsyncStorage.setItem("user", JSON.stringify(data.user)),
+        ]);
+      })
+      .then(() => {
+        router.push("/(tabs)");
       })
       .catch((error) => {
         console.error("Error during login:", error);

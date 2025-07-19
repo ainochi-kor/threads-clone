@@ -59,7 +59,8 @@
           "savePhotosPermission": "The app saves photos to your library to let you share them with your threads.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
