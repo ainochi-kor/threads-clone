@@ -1,6 +1,8 @@
+import { AuthContext } from "@/app/_layout";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { usePathname, useRouter } from "expo-router";
+import { useContext } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -17,7 +19,8 @@ export default function Index() {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const isLoggedIn = false; // 로그인 상태를 확인하는 변수
+  const { user } = useContext(AuthContext);
+  const isLoggedIn = !!user;
 
   const { width, height } = Dimensions.get("window");
   console.log("화면 너비:", width, "화면 높이:", height);
