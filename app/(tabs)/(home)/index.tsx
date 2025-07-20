@@ -1,46 +1,60 @@
-import { AuthContext } from "@/app/_layout";
+import SideMenu from "@/components/SideMenu";
+import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { Image } from "expo-image";
 import { usePathname, useRouter } from "expo-router";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
-  Dimensions,
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AuthContext } from "../../_layout";
 
 export default function Index() {
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const { user } = useContext(AuthContext);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
   const isLoggedIn = !!user;
 
-  const { width, height } = Dimensions.get("window");
-  console.log("화면 너비:", width, "화면 높이:", height);
-
   return (
-    <SafeAreaView
-      style={
-        (styles.container,
-        { paddingTop: insets.top, paddingBottom: insets.bottom })
-      }
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
     >
-      <BlurView intensity={70} style={styles.header}>
+      <BlurView style={styles.header} intensity={70}>
+        {isLoggedIn && (
+          <Pressable
+            style={styles.menuButton}
+            onPress={() => {
+              setIsSideMenuOpen(true);
+            }}
+          >
+            <Ionicons name="menu" size={24} color="black" />
+          </Pressable>
+        )}
+        <SideMenu
+          isVisible={isSideMenuOpen}
+          onClose={() => setIsSideMenuOpen(false)}
+        />
         <Image
           source={require("../../../assets/images/react-logo.png")}
           style={styles.headerLogo}
         />
         {!isLoggedIn && (
           <TouchableOpacity
-            onPress={() => router.navigate(`./login`)}
             style={styles.loginButton}
+            onPress={() => {
+              console.log("loginButton onPress");
+              router.navigate(`/login`);
+            }}
           >
             <Text style={styles.loginButtonText}>로그인</Text>
           </TouchableOpacity>
@@ -49,14 +63,14 @@ export default function Index() {
       {isLoggedIn && (
         <View style={styles.tabContainer}>
           <View style={styles.tab}>
-            <TouchableOpacity onPress={() => router.push(`./`)}>
+            <TouchableOpacity onPress={() => router.navigate(`/`)}>
               <Text style={{ color: pathname === "/" ? "red" : "black" }}>
                 For you
               </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.tab}>
-            <TouchableOpacity onPress={() => router.push(`./following`)}>
+            <TouchableOpacity onPress={() => router.navigate(`/following`)}>
               <Text style={{ color: pathname === "/" ? "black" : "red" }}>
                 Following
               </Text>
@@ -64,13 +78,22 @@ export default function Index() {
           </View>
         </View>
       )}
-
       <View>
-        <TouchableOpacity onPress={() => router.push(`./seatch`)}>
-          <Text>게시글</Text>
+        <TouchableOpacity onPress={() => router.push(`/@zerocho/post/1`)}>
+          <Text>게시글1</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+      <View>
+        <TouchableOpacity onPress={() => router.push(`/@zerocho/post/2`)}>
+          <Text>게시글2</Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        <TouchableOpacity onPress={() => router.push(`/@zerocho/post/3`)}>
+          <Text>게시글3</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
@@ -90,7 +113,7 @@ const styles = StyleSheet.create({
   },
   headerLogo: {
     width: 42, // DP, DIP
-    height: 42, // DP, DIP
+    height: 42,
   },
   loginButton: {
     position: "absolute",
@@ -105,5 +128,10 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "white",
+  },
+  menuButton: {
+    position: "absolute",
+    left: 20,
+    top: 10,
   },
 });

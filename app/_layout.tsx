@@ -1,24 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-export interface User {
+interface User {
   id: string;
   name: string;
   profileImageUrl: string;
   description: string;
-  link?: string;
-  showInstagramBadge?: boolean;
-  isPrivate?: boolean;
 }
 
 export const AuthContext = createContext<{
   user: User | null;
   login?: () => Promise<any>;
   logout?: () => Promise<any>;
-  updateUser?: (user: User) => void;
 }>({
   user: null,
 });
@@ -63,14 +59,15 @@ export default function RootLayout() {
     ]);
   };
 
+  useEffect(() => {
+    AsyncStorage.getItem("user").then((user) => {
+      setUser(user ? JSON.parse(user) : null);
+    });
+    // TODO: validating access token
+  }, []);
+
   return (
-    <AuthContext
-      value={{
-        user,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext value={{ user, login, logout }}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />

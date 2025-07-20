@@ -12,13 +12,12 @@ export default function Login() {
   if (isLoggedIn) {
     return <Redirect href="/(tabs)" />;
   }
-
   return (
     <View style={{ paddingTop: insets.top }}>
-      <Pressable onPress={() => router.back()} style={{ padding: 20 }}>
+      <Pressable onPress={() => router.back()}>
         <Text>Back</Text>
       </Pressable>
-      <Pressable onPress={login} style={styles.loginButton}>
+      <Pressable style={styles.loginButton} onPress={login}>
         <Text style={styles.loginButtonText}>Login</Text>
       </Pressable>
     </View>
@@ -35,6 +34,5 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "white",
-    textAlign: "center",
   },
 });
