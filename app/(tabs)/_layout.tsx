@@ -8,36 +8,38 @@ import {
   Pressable,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { AuthContext } from "../_layout";
 
-const AnimationTabBarButton = ({
+const AnimatedTabBarButton = ({
   children,
   onPress,
   style,
+  ref,
   ...restProps
 }: BottomTabBarButtonProps) => {
-  const { ref, ...propsWithoutRef } = restProps;
   const scaleValue = useRef(new Animated.Value(1)).current;
+
   const handlePressOut = () => {
     Animated.sequence([
       Animated.spring(scaleValue, {
         toValue: 1.2,
-        useNativeDriver: true, // GPU 가속을 사용하여 애니메이션 성능 향상
-        friction: 4,
+        useNativeDriver: true,
+        speed: 200,
       }),
       Animated.spring(scaleValue, {
         toValue: 1,
         useNativeDriver: true,
-        friction: 4,
+        speed: 200,
       }),
     ]).start();
   };
 
   return (
     <Pressable
-      {...propsWithoutRef}
+      {...restProps}
       onPress={onPress}
       onPressOut={handlePressOut}
       style={[
@@ -58,20 +60,19 @@ export default function TabLayout() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const isLoggedIn = !!user;
+  const colorScheme = useColorScheme();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true);
-    console.log("로그인 모달 열기");
   };
 
   const closeLoginModal = () => {
     setIsLoginModalOpen(false);
-    console.log("로그인 모달 닫기");
   };
 
   const toLoginPage = () => {
-    closeLoginModal();
+    setIsLoginModalOpen(false);
     router.push("/login");
   };
 
@@ -81,7 +82,11 @@ export default function TabLayout() {
         backBehavior="history"
         screenOptions={{
           headerShown: false,
-          tabBarButton: (props) => <AnimationTabBarButton {...props} />,
+          tabBarStyle: {
+            backgroundColor: colorScheme === "dark" ? "#101010" : "white",
+            borderTopWidth: 0,
+          },
+          tabBarButton: (props) => <AnimatedTabBarButton {...props} />,
         }}
       >
         <Tabs.Screen
@@ -92,7 +97,13 @@ export default function TabLayout() {
               <Ionicons
                 name="home"
                 size={24}
-                color={focused ? "black" : "gray"}
+                color={
+                  focused
+                    ? colorScheme === "dark"
+                      ? "white"
+                      : "black"
+                    : "gray"
+                }
               />
             ),
           }}
@@ -105,7 +116,13 @@ export default function TabLayout() {
               <Ionicons
                 name="search"
                 size={24}
-                color={focused ? "black" : "gray"}
+                color={
+                  focused
+                    ? colorScheme === "dark"
+                      ? "white"
+                      : "black"
+                    : "gray"
+                }
               />
             ),
           }}
@@ -114,9 +131,10 @@ export default function TabLayout() {
           name="add"
           listeners={{
             tabPress: (e) => {
+              console.log("tabPress");
               e.preventDefault();
               if (isLoggedIn) {
-                router.navigate("./modal");
+                router.navigate("/modal");
               } else {
                 openLoginModal();
               }
@@ -128,7 +146,13 @@ export default function TabLayout() {
               <Ionicons
                 name="add"
                 size={24}
-                color={focused ? "black" : "gray"}
+                color={
+                  focused
+                    ? colorScheme === "dark"
+                      ? "white"
+                      : "black"
+                    : "gray"
+                }
               />
             ),
           }}
@@ -137,8 +161,8 @@ export default function TabLayout() {
           name="activity"
           listeners={{
             tabPress: (e) => {
-              e.preventDefault();
               if (!isLoggedIn) {
+                e.preventDefault();
                 openLoginModal();
               }
             },
@@ -149,7 +173,13 @@ export default function TabLayout() {
               <Ionicons
                 name="heart-outline"
                 size={24}
-                color={focused ? "black" : "gray"}
+                color={
+                  focused
+                    ? colorScheme === "dark"
+                      ? "white"
+                      : "black"
+                    : "gray"
+                }
               />
             ),
           }}
@@ -158,8 +188,8 @@ export default function TabLayout() {
           name="[username]"
           listeners={{
             tabPress: (e) => {
-              e.preventDefault();
               if (!isLoggedIn) {
+                e.preventDefault();
                 openLoginModal();
               }
             },
@@ -170,26 +200,29 @@ export default function TabLayout() {
               <Ionicons
                 name="person-outline"
                 size={24}
-                color={focused ? "black" : "gray"}
+                color={
+                  focused
+                    ? colorScheme === "dark"
+                      ? "white"
+                      : "black"
+                    : "gray"
+                }
               />
             ),
           }}
         />
         <Tabs.Screen
-          name="following"
-          options={{
-            tabBarLabel: () => null,
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="(post)/[username]/post/[postId]"
+          name="(post)/[username]/post/[postID]"
           options={{
             href: null,
           }}
         />
       </Tabs>
-      <Modal visible={isLoginModalOpen} transparent={true} animationType="fade">
+      <Modal
+        visible={isLoginModalOpen}
+        transparent={true}
+        animationType="slide"
+      >
         <View
           style={{
             flex: 1,
@@ -197,8 +230,8 @@ export default function TabLayout() {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
-          <View style={{ padding: 20, backgroundColor: "white" }}>
-            <Pressable onPress={toLoginPage} style={{ marginBottom: 20 }}>
+          <View style={{ backgroundColor: "white", padding: 20 }}>
+            <Pressable onPress={toLoginPage}>
               <Text>Login Modal</Text>
             </Pressable>
             <TouchableOpacity onPress={closeLoginModal}>
