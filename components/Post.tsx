@@ -1,30 +1,33 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import {
-  Image,
-  Pressable,
-  ScrollView,
-  Share,
+  View,
   StyleSheet,
   Text,
   TouchableOpacity,
+  Share,
   useColorScheme,
-  View,
+  Image,
+  Pressable,
+  Linking,
+  ScrollView,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 export interface Post {
   id: string;
-  username: string;
-  displayName: string;
+  user: {
+    id: string;
+    name: string;
+    profileImageUrl: string;
+    isVerified?: boolean;
+  };
   content: string;
   timeAgo: string;
   likes: number;
   comments: number;
   reposts: number;
-  isVerified?: boolean;
-  avatar?: string;
-  images?: string[];
+  imageUrls?: string[];
   link?: string;
   linkThumbnail?: string;
   location?: [number, number];
@@ -64,12 +67,12 @@ export default function Post({ item }: { item: Post }) {
       isLiked: false, // 예시: 기본값 false
       shares: 0, // 예시: 기본값 0
     };
-    router.push(`/@${post.username}/post/${post.id}`);
+    router.push(`/@${post.user.id}/post/${post.id}`);
   };
 
   // 사용자 정보 클릭 핸들러 (아바타 또는 이름)
   const handleUserPress = (post: Post) => {
-    router.push(`/@${post.username}`);
+    router.push(`/@${post.user.id}`);
   };
 
   return (
@@ -81,8 +84,11 @@ export default function Post({ item }: { item: Post }) {
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
           <TouchableOpacity onPress={() => handleUserPress(item)}>
-            {item.avatar ? (
-              <Image source={{ uri: item.avatar }} style={styles.avatar} />
+            {item.user.profileImageUrl ? (
+              <Image
+                source={{ uri: item.user.profileImageUrl }}
+                style={styles.avatar}
+              />
             ) : (
               <View style={styles.avatar}>
                 <Ionicons name="person-circle" size={40} color="#ccc" />
@@ -100,9 +106,9 @@ export default function Post({ item }: { item: Post }) {
                       : styles.usernameLight,
                   ]}
                 >
-                  {item.username}
+                  {item.user.id}
                 </Text>
-                {item.isVerified && (
+                {item.user.isVerified && (
                   <Ionicons
                     name="checkmark-circle"
                     size={16}
@@ -144,9 +150,9 @@ export default function Post({ item }: { item: Post }) {
             nestedScrollEnabled
             contentContainerStyle={styles.postImages}
           >
-            {item.images &&
-              item.images.length > 0 &&
-              item.images.map((image) => (
+            {item.imageUrls &&
+              item.imageUrls.length > 0 &&
+              item.imageUrls.map((image) => (
                 <Image
                   key={image}
                   source={{ uri: image }}
@@ -156,7 +162,7 @@ export default function Post({ item }: { item: Post }) {
               ))}
           </ScrollView>
         </View>
-        {!item.images?.length && item.link && (
+        {!item.imageUrls?.length && item.link && (
           <Pressable onPress={() => WebBrowser.openBrowserAsync(item.link!)}>
             <Image
               source={{ uri: item.linkThumbnail }}
@@ -191,7 +197,7 @@ export default function Post({ item }: { item: Post }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => handleShare(item.username, item.id)}
+          onPress={() => handleShare(item.user.id, item.id)}
         >
           <Feather name="send" size={20} color="#666" />
         </TouchableOpacity>
